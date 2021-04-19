@@ -2,6 +2,8 @@
 
 namespace model;
 
+use Exception;
+
 class View {
 
 	private Model $model;
@@ -19,17 +21,19 @@ class View {
 
 	public  function view(): void {
 
+	    $layout = sprintf('%s/%s.php', $this->layoutsPath, $this->model->getLayout());
 		$template = sprintf('%s/%s.php', $this->templatesPath, $this->model->getTemplate());
 
-//        if (!file_exists($layout)) {
-//            throw new \Exception("Layout '{$layout}' is not exists");
-//        } else
-            if (!file_exists($template)) {
-            throw new \Exception("Template '{$template}' is not exists");
+        if (!file_exists($layout)) {
+            throw new Exception("Layout '{$layout}' is not exists");
+        }
+        if (!file_exists($template)) {
+            throw new Exception("Template '{$template}' is not exists");
         }
 
 		require_once('view/index/header.php');
-		require_once($template);
+        require_once($layout);
+        require_once($template);
 		require_once('view/index/footer.php');
 
 	}

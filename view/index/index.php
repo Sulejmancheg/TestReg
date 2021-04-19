@@ -1,7 +1,6 @@
 <h3 style="margin: auto">
 <?php
-//use model\Auth;
-//$auth = new Auth();
-echo 'Добрый день, '.$auth->getUser().PHP_EOL;
+use model\Auth;
+echo 'Добрый день, '.(new Auth($this->model))->getUser().PHP_EOL;
 ?>
 </h3>

@@ -43,10 +43,3 @@
 
   </head>
   <body class="d-flex flex-column h-100">
-<?php
-
-(new model\Auth($this->model))::getLogMessage();
-
-$layout = sprintf('%s/%s.php', $this->layoutsPath, $this->model->getLayout());
-require_once($layout);
-

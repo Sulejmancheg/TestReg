@@ -8,6 +8,7 @@ class Model {
 	private string $template = 'index';
 	private string $layout = 'index';
 	private null|string $nickname = null;
+	private null|array $message = null;
 
 	public function getPageUrl(): string {
 		return $this->pageUrl;
@@ -52,6 +53,23 @@ class Model {
     {
         return $this->nickname;
     }
+
+    /**
+     * @param array|null $message
+     */
+    public function setMessage(?array $message): void
+    {
+        $this->message = $message;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getMessage(): ?array
+    {
+        return $this->message;
+    }
+
 
 
 

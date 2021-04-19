@@ -2,6 +2,8 @@
 
 namespace model;
 
+use Exception;
+
 class Auth {
 
     private Model $model;
@@ -9,16 +11,22 @@ class Auth {
 	private string $userInfoListPath = '1.txt';
     private null|string $login = null;
     private null|string $password = null;
-	private string $loginReg = '/^[a-z]([-.\w])*/i';
+	private string $loginReg = '/^[a-z]([-.\w]){2,15}/i';
 	private string $pwdReg = '/[<>\'"`;:\/}{\s]/';
+	private array $message = [
+	    [['Неверные данные', 0], ['Неверные данные', 0]],
+        [['Недопустимые символы в логине', 1], ['Недопустимые символы в пароле', 2]]
+    ];
+	private int $prompt;
 
-	public function __construct(Model $model)
+	public function __construct(Model $model, $prompt = 0)
     {
         $this->model = $model;
+        $this->prompt = $prompt;
     }
 
     public function getUser(): string {
-		if (self::isAuthentificated()){
+		if ($this->isAuthentificated()){
 			$userInfoList = $this->getUserInfoList();
 			foreach ($userInfoList as $userInfo){
 				if ($userInfo['nickname'] == $this->model->getNickname()){
@@ -33,16 +41,18 @@ class Auth {
 		return !empty($this->model->getNickname());
 	}
 
-	public function tryToLogin(): bool {
-	    echo 'TryToLogIn'.PHP_EOL;
+    /**
+     * @throws Exception
+     */
+    private function login(){
 		$userInfoList = $this->getUserInfoList();
 		foreach ($userInfoList as $userInfo){
 			if ($userInfo['login'] == hash('sha3-512', $this->login) && $userInfo['password'] == hash('sha3-512', $this->password)){
 				$this->model->setNickname($userInfo['nickname']);
-				return true;
-			}
+                $this->model->setLayout( 'index' );
+            }
 		}
-		return false;
+		throw new Exception($this->message[0][0][0], $this->message[0][0][1]);
 	}
 
 	private function encodeUser($user, $id): string {
@@ -91,28 +101,18 @@ class Auth {
 		session_destroy();
 	}
 
-	public static function setLogMessage($message)
-	{
-		$_SESSION['msg'] = $message;
-	}
-
-	public static function getLogMessage() {
-		if (isset($_SESSION['msg'])){
-				echo '<div class="form-label-group">'
-				     .$_SESSION['msg'].
-				     '</div>';
-			unset($_SESSION['msg']);
-		}
-	}
-
-    public function validLogData($login, $password): bool
-    {
-        if ((!preg_match($this->loginReg, $login)) || (preg_match($this->pwdReg, $password))){
-            return false;
+    /**
+     * @throws Exception
+     */
+    public function validateLogData($login, $password){
+        if (!preg_match($this->loginReg, $login)){
+            throw new Exception($this->message[$this->prompt][0][0], $this->message[$this->prompt][0][1]);
+        } elseif (preg_match($this->pwdReg, $password)){
+            throw new Exception($this->message[$this->prompt][1][0], $this->message[$this->prompt][1][1]);
         } else {
             $this->login = strtolower($login);
             $this->password = $password;
-            return true;
+            $this->login();
         }
 	}
 }
