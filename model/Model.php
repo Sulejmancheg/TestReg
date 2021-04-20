@@ -8,17 +8,18 @@ class Model {
 	private string $template = 'index';
 	private string $layout = 'index';
 	private null|string $nickname = null;
-	private null|array $message = null;
+	private null|string $message = null;
 
 	public function getPageUrl(): string {
 		return $this->pageUrl;
 	}
 
-	public function setTitle($title ): void {
+	public function setTitle(string $title ): void {
 		$this->title = $title;
 	}
 
-	public function getTitle() {
+	public function getTitle(): ?string
+    {
 		return $this->title;
 	}
 
@@ -39,25 +40,25 @@ class Model {
 	}
 
     /**
-     * @param null $nickname
+     * @param string $nickname
      */
-    public function setNickname($nickname): void
+    public function setNickname(string $nickname): void
     {
         $this->nickname = $nickname;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
-    public function getNickname()
+    public function getNickname(): ?string
     {
         return $this->nickname;
     }
 
     /**
-     * @param array|null $message
+     * @param string|null $message
      */
-    public function setMessage(?array $message): void
+    public function setMessage(?string $message): void
     {
         $this->message = $message;
     }
@@ -65,7 +66,7 @@ class Model {
     /**
      * @return array|null
      */
-    public function getMessage(): ?array
+    public function getMessage(): ?string
     {
         return $this->message;
     }

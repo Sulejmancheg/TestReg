@@ -2,8 +2,6 @@
 
 namespace model;
 
-use Exception;
-
 class Auth {
 
     private Model $model;
@@ -13,10 +11,7 @@ class Auth {
     private null|string $password = null;
 	private string $loginReg = '/^[a-z]([-.\w]){2,15}/i';
 	private string $pwdReg = '/[<>\'"`;:\/}{\s]/';
-	private array $message = [
-	    [['Неверные данные', 0], ['Неверные данные', 0]],
-        [['Недопустимые символы в логине', 1], ['Недопустимые символы в пароле', 2]]
-    ];
+	private array $myExceptionCode = [[0, 0], [1, 2]];
 	private int $prompt;
 
 	public function __construct(Model $model, $prompt = 0)
@@ -42,7 +37,7 @@ class Auth {
 	}
 
     /**
-     * @throws Exception
+     * @throws MyException
      */
     private function login(){
 		$userInfoList = $this->getUserInfoList();
@@ -52,7 +47,7 @@ class Auth {
                 $this->model->setLayout( 'index' );
             }
 		}
-		throw new Exception($this->message[0][0][0], $this->message[0][0][1]);
+		throw new MyException();
 	}
 
 	private function encodeUser($user, $id): string {
@@ -102,13 +97,13 @@ class Auth {
 	}
 
     /**
-     * @throws Exception
+     * @throws MyException
      */
     public function validateLogData($login, $password){
         if (!preg_match($this->loginReg, $login)){
-            throw new Exception($this->message[$this->prompt][0][0], $this->message[$this->prompt][0][1]);
+            throw new MyException($this->myExceptionCode[$this->prompt][0]);
         } elseif (preg_match($this->pwdReg, $password)){
-            throw new Exception($this->message[$this->prompt][1][0], $this->message[$this->prompt][1][1]);
+            throw new MyException($this->myExceptionCode[$this->prompt][1]);
         } else {
             $this->login = strtolower($login);
             $this->password = $password;

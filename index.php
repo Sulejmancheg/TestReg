@@ -7,10 +7,11 @@ use controller\Router;
 use model\Model;
 use model\Auth;
 use controller\IndexController;
+use model\MyException;
 use model\View;
 
 $model = new Model();
-$auth = new Auth($model, 1);    //Если вместо 0 ввести 1, будут отображаться подсказки при неверном вводе логина и пароля
+$auth = new Auth($model, 0);    //Если вместо 0 ввести 1, будут отображаться подсказки при неверном вводе логина и пароля
 
 session_start();
 
@@ -40,8 +41,8 @@ switch (isset($_SESSION['ban'])) {
                     if (isset($_SESSION['count'])) {
                         unset($_SESSION['count']);
                     }
-                } catch (Exception $e) {
-                    $model->setMessage(['text' => $e->getMessage(), 'code' => $e->getCode()]);
+                } catch (MyException $e) {
+                    $model->setMessage($e->getMessage());
                     if (!isset($_SESSION['count'])) {
                         $_SESSION['count'] = 1;
                     } else {
